@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
 	<link rel='icon' href = 'favicon.ico'/>
     <script>
         window.addEventListener('error', (e) => {
@@ -8,10 +9,11 @@
 			console.error(error);
         });
     </script>
-    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#ffa500">
 	<link rel="manifest" href="manifest.json">
+	<link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <title>Atari Breakout</title>
 </head>
 <body>
@@ -241,5 +243,10 @@
 			
 		}
 	</script>
+	<noscript>
+		<div style = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; text-align: center;'>
+			You need Javascript to play this game. Enable Javascript, and reload the page to play.
+		</div>
+	</noscript>
 </body>
 </html>
