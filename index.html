@@ -217,7 +217,12 @@
             for (brick of bricks) {
                 brick.draw();
             }
-
+			if (bricks.length < 1) {
+				if (confirm('you no dead. you win. play more?')) {
+					document.location.reload();
+					go = true;
+				}
+			}
             ball.draw();
             if (go !== true) requestAnimationFrame(update);
         }
