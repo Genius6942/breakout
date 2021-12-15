@@ -7,11 +7,6 @@
             if (!localStorage.useAlertError) alert(e.stack || e.message + ' at ' + e.filename + ':' + e.lineno + ':' + e.colno);
 			console.error(error);
         });
-        window.addEventListener('keydown', (e) => {
-            if (e.key == 'i') {
-                alert(eval(prompt('>')));
-            }
-        });
     </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -211,23 +206,29 @@
                 for (let i = 0; i < bricks.length; i++) {
                     bricks[i].index = i;
                 }
+				if (bricks.length < 1) {
+					if (confirm('you no dead. you win. play more?')) {
+						document.location.reload();
+						go = true;
+					}
+				}
             }
             paddle.draw();
             ball.draw();
             for (brick of bricks) {
                 brick.draw();
             }
-			if (bricks.length < 1) {
-				if (confirm('you no dead. you win. play more?')) {
-					document.location.reload();
-					go = true;
-				}
-			}
             ball.draw();
             if (go !== true) requestAnimationFrame(update);
         }
-
-        update();
+		paddle.draw();
+		ball.draw();
+		for (brick of bricks) {
+			brick.draw();
+		}
+		ball.draw();
+		
+        setTimeout(update, 500);
     </script>
 	<script>
 		if ("serviceWorker" in navigator) {
