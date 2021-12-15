@@ -39,7 +39,7 @@
         const ctx = canvas.getContext('2d');
         class Ball {
             constructor() {
-                this.x = canvas.width / 2;
+                this.x = Math.random() * canvas.width;
                 this.y = canvas.height / 2;
                 this.radius = 10;
                 this.color = '#0095dd';
