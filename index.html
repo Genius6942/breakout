@@ -234,7 +234,7 @@
 		if ("serviceWorker" in navigator) {
 			window.addEventListener("load", function() {
 			    navigator.serviceWorker
-				    .register("serviceWorker.js")
+				    .register("/breakout/serviceWorker.js")
 				    .then(res => "service worker registered")
 				    .catch(err => alert("service worker not registered" + err));
 			});
