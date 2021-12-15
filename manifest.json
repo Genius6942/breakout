@@ -1,0 +1,17 @@
+{
+	"name": "Atari Breakout",
+	"short_name": "Breakout",
+	"start_url": "/index.html",
+	"background_color": "#FFA500",
+	"theme_color": "#FFA500",
+	"orientation": "landscape-primary",
+	"description": "where you play atari breakout",
+	"display": "fullscreen",
+	"icons": [
+		{
+		    "src": "/icons/icon-512x512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+	    }
+	]
+}

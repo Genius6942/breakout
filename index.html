@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.addEventListener('error', (e) => {
+            if (!localStorage.useAlertError) alert(e.stack || e.message + ' at ' + e.filename + ':' + e.lineno + ':' + e.colno);
+			console.error(error);
+        });
+        window.addEventListener('keydown', (e) => {
+            if (e.key == 'i') {
+                alert(eval(prompt('>')));
+            }
+        });
+    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="manifest" href="/manifest.json">
+    <title>Atari Breakout</title>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js" integrity="sha512-LF8ZB1iTwi4Qvkm4pekHG4a437Y9Af5ZuwbnW4GTbAWQeR2E4KW8WF+xH8b9psevV7wIlDMx1MH9YfPqgKhA/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const canvas = document.body.appendChild(document.createElement('canvas'));
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.style.cssText = `
+            width: 100%;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            position: fixed;
+        `;
+        window.addEventListener('resize', () => {
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+        });
+        const ctx = canvas.getContext('2d');
+        class Ball {
+            constructor() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.radius = 10;
+                this.color = '#0095dd';
+                this.speed = 10;
+                this.v = {
+                    x: this.speed,
+                    y: -this.speed,
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            update(bricks) {
+                if (this.y + this.v.y < this.radius) {
+                    this.v.y *= -1;
+                }
+                if (this.x + this.v.x < this.radius) {
+                    this.v.x *= -1;
+                }
+                if (this.x + this.v.x > canvas.width - this.radius) {
+                    this.v.x *= -1;
+                }
+                this.x += this.v.x;
+                this.y += this.v.y;
+
+                if (this.y + this.radius > canvas.height - paddle.height && this.x > paddle.x - this.radius && this.x < paddle.x + paddle.width + this.radius) {
+                    this.v.y *= -1;
+                } else if (this.y + this.radius > canvas.height) {
+                    if (confirm('you dead. play more?')) document.location.reload();
+                    return true;
+                }
+                let i = false;
+                bricks.forEach(brick => {
+                    if (this.rectIntercect(brick)) {
+                        if (this.x < brick.x + brick.width && this.x > brick.x) {
+                            this.v.y *= -1;
+                        } else {
+                            this.v.x *= -1;
+                        }
+                        i = brick.index
+                    }
+                });
+
+                return i;
+            }
+
+            rectIntercect(rect) {
+                const dx = Math.abs(this.x - (rect.x + rect.width / 2));
+                const dy = Math.abs(this.y - (rect.y + rect.height / 2));
+                if (dx > rect.width / 2 + this.radius) return false;
+                if (dy > rect.height / 2 + this.radius) return false;
+                if (dx <= rect.width / 2) return true;
+                if (dy <= rect.height / 2) return true;
+                return (dx - rect.width / 2) ** 2 + (dy - rect.height / 2) ** 2 <= this.radius ** 2;
+            }
+        }
+
+        class Paddle {
+            constructor(speed) {
+                this.width = 100;
+                this.height = 15;
+                this.x = canvas.width / 2 - this.width;
+                this.y = canvas.height - this.height;
+                this.paddleSpeed = speed;
+                this.keys = {right: false, left: false};
+                this.color = 'orange';
+                canvas.addEventListener('mousemove', this.mouseHandler.bind(this));
+                window.addEventListener('keydown', this.keyDownHandler.bind(this));
+                window.addEventListener('keyup', this.keyUpHandler.bind(this));
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                if (this.keys.left) {
+                    this.x -= this.paddleSpeed;
+                }
+                if (this.keys.right) {
+                    this.x += this.paddleSpeed;
+                }
+
+                if (this.x < 0) {
+                    this.x = 0;
+                }
+                if (this.x + this.width > canvas.width) {
+                    this.x = canvas.width - this.width;
+                }
+            }
+
+            mouseHandler(e) {
+                this.x = e.clientX - this.width / 2;
+            }
+
+            keyDownHandler(e) {
+                if (e.key == 'ArrowRight' || e.key == 'Right') {
+                    this.keys.right = true;
+                }
+
+                else if (e.key == 'ArrowLeft' || e.key == 'Left') {
+                    this.keys.left = true;
+                }
+            }
+
+            keyUpHandler(e) {
+                if (e.key == 'ArrowRight' || e.key == 'Right') {
+                    this.keys.right = false;
+                }
+
+                else if (e.key == 'ArrowLeft' || e.key == 'Left') {
+                    this.keys.left = false;
+                }
+            }
+        }
+
+        class Brick {
+            constructor(x, y, width, height, index) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.index = index;
+                this.color = 'blue';
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+        const ball = window.ball = new Ball();
+
+        const paddle = window.paddle = new Paddle(ball.speed);
+
+        function createBricks() {
+            let padding = 50;
+            let idealBrickWidth = 150;
+            let numberOfColumns = Math.round((window.innerWidth - padding) / (idealBrickWidth + padding));
+            let brickWidth = (window.innerWidth - numberOfColumns * padding - padding) / numberOfColumns;
+            let idealBrickHeight = 30;
+            let numberOfRows = (window.innerHeight / 3 - padding) / (idealBrickHeight + padding);
+            let brickHeight = (window.innerHeight / 3 - numberOfRows * padding + padding) / numberOfRows;
+            let b = [];
+            for (let i = 0; i < numberOfRows; i++) {
+                for (let j = 0; j < numberOfColumns; j++) {
+                    b.push(new Brick(padding + (brickWidth + padding) * j, padding + (brickHeight + padding) * i, brickWidth, brickHeight, i * numberOfColumns + j));
+                }
+            }
+            return b;
+        }
+
+        const bricks = createBricks();
+
+        function update() {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            paddle.update();
+            go = ball.update(bricks);
+            if (typeof go === 'number') {
+                bricks.splice(go, 1);
+                for (let i = 0; i < bricks.length; i++) {
+                    bricks[i].index = i;
+                }
+            }
+            paddle.draw();
+            ball.draw();
+            for (brick of bricks) {
+                brick.draw();
+            }
+
+            ball.draw();
+            if (go !== true) requestAnimationFrame(update);
+        }
+
+        update();
+    </script>
+	<script>
+		if ("serviceWorker" in navigator) {
+			window.addEventListener("load", function() {
+			    navigator.serviceWorker
+				    .register("/serviceWorker.js")
+				    .then(res => "service worker registered")
+				    .catch(err => alert("service worker not registered" + err));
+			});
+			
+		}
+	</script>
+</body>
+</html>
