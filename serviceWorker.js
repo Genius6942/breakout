@@ -1,7 +1,7 @@
 const thingsToAdd = [
-	'/pwaa',
-	'/pwaa/index.html',
-	'/pwaa/favicon.ico'
+	'/breakout',
+	'/breakout/index.html',
+	'/breakout/favicon.ico'
 ]
 
 self.addEventListener('install', (e) => {
