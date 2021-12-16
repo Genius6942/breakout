@@ -1,19 +1,31 @@
-const thingsToAdd = [
-	'/breakout',
+// Files to cache
+const cacheName = 'breakout-v1';
+const appShellFiles = [
+ 	'/breakout/',
 	'/breakout/index.html',
-	'/breakout/favicon.ico'
-]
+	
+];
 
+const gamesImages = [];
+// Installing Service Worker
 self.addEventListener('install', (e) => {
-	e.waitUntil(
-		caches.open('site').then(cache => {
-			cache.addAll(thingsToAdd);
-		})
-	);
+  	console.log('[Service Worker] Install');
+  	e.waitUntil((async () => {
+		const cache = await caches.open(cacheName);
+		await cache.addAll(appShellFiles);
+  	})());
 });
-self.addEventListener("fetch", (e) => {
-	console.log(e.request.url);
-	e.respondWith(
-		caches.match(e.request).then((response) => response || fetch(e.request)),
-	);
+
+// Fetching content using Service Worker
+self.addEventListener('fetch', (e) => {
+	e.respondWith((async () => {
+		const r = await caches.match(e.request);
+		console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+		if (r) return r;
+		const response = await fetch(e.request);
+		const cache = await caches.open(cacheName);
+		console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+		cache.put(e.request, response.clone());
+		return response;
+	})());
 });
