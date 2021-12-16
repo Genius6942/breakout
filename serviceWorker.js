@@ -3,7 +3,7 @@ const cacheName = 'breakout-v1';
 const appShellFiles = [
  	'/breakout/',
 	'/breakout/index.html',
-	
+	'/breakout/favicon.ico'
 ];
 
 const gamesImages = [];
